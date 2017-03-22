@@ -1,0 +1,41 @@
+extends ../layout
+
+block content
+  .container
+    .row
+      //- 通过控制器将从数据库中查询到的数据通过render传入这里进行循环方便使用
+      .panel.panel-default
+        .panel-heading
+          //- 将每组电影分类的名称变成一个链接,第一个参数是用来查询分类的id,第二个参数是分页的参数
+          h3 #{keyword}
+        .panel-body
+          //- 遍历当前分类中的movies字段存储的所有电影展现在页面中
+          if movies && movies.length > 0
+            each item in movies
+              .col-md-2
+                .thumbnail
+                  a(href="/movie/#{item._id}")
+                    if item.poster.indexOf('http') > -1
+                      img(src="#{item.poster}",alt="#{item.title}")
+                    else
+                      img(src="/upload/#{item.poster}",alt="#{item.title}")
+                  .caption
+                    h4 #{item.title}
+                    p: a.btn.btn-primary(href="/movie/#{item._id}",role="button")
+                      观看预告片
+        //- 加入分页的效果
+        //- 刚开始通过主页面进入到的都是'p=0'的,然后从这里的按钮处再进入到'p=1'或'p=2'等等情况
+        ul.pagination
+          - for (var i = 0;i < totalPage; i++){
+            // 循环所有页数,将等于当前页currentPage变量的i值进行高亮处理
+            - if (currentPage == (i + 1)) {
+                li.active
+                 span #{currentPage}
+            - }
+            - else{
+                //- 将不等于当前页currentPage变量的一般处理即可
+                li
+                 //- 给代表除当前页之外的其余页的页数增加a标签
+                 a(href='/results?#{query}&p=#{i}') #{i+1}
+            - }
+          - }

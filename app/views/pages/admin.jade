@@ -1,0 +1,83 @@
+extends ../layout
+
+block content
+  .container
+    .row
+      //- 增加enctype的目的是告诉表单,提交的时候里面的多种数据可以混合上传
+      form.form-horizontal(method="post",action="/admin/movie/new",enctype="multipart/form-data")
+        .form-group
+          label.col-sm-2.control-label 豆瓣同步
+          .col-sm-10
+            //- 这里当失去光标的时候触发jsonp处理返回数据加载在页面中
+            input#douban.form-control(type="text")
+
+        //- 只有通过exports.update方法进入到这个页面的时候,变量movie中才具备'_id'的值,如果是通过exports.new方法进入到这个页面的,变量movie是不具备'_id'的,所以当你通过电影列表页点击修改进入到这个页面的时候,这个隐藏域才会出现在DOM里
+        if movie._id
+          input(type="hidden",name="movie[_id]",value=movie._id)
+        .form-group
+          label.col-sm-2.control-label(for="inputCategory") 电影分类
+          .col-sm-10
+            //- 这里的"#{movie.categoryName}"代表如果下面radio中没有我想要的分类,那么我们就不选择radio里的分类,而是直接在这里输入分类名称,后台服务器会在我们没有选择分类的情况下将我们在这里输入的分类当成一个新的分类创建到数据库中去
+            input#inputCategory.form-control(type="text",name="movie[categoryName]",value=movie.categoryName)
+
+        .form-group
+          label.col-sm-2.control-label 分类选择
+          //- 将分类项目展示在页面中供用户查看
+          each cat in categories
+            label.radio-inline
+              //- 如果'movie._id'存在,说明是更新操作
+              if movie._id
+                input(type="radio",name="movie[category]",value=cat._id,checked=cat._id.toString()==movie.category.toString())
+                | #{cat.name}
+              else
+                input(type="radio",name="movie[category]",value=cat._id)
+                | #{cat.name}
+        .form-group
+          label.col-sm-2.control-label(for="inputTitle") 电影名字
+          .col-sm-10
+            input#inputTitle.form-control(type="text",name="movie[title]",value=movie.title)
+
+        .form-group
+          label.col-sm-2.control-label(for="inputDoctor") 电影导演
+          .col-sm-10
+            input#inputDoctor.form-control(type="text",name="movie[doctor]",value=movie.doctor)
+
+        .form-group
+          label.col-sm-2.control-label(for="inputCountry") 国家
+          .col-sm-10
+            input#inputCountry.form-control(type="text",name="movie[country]",value=movie.country)
+
+        .form-group
+          label.col-sm-2.control-label(for="inputLanguage") 语种
+          .col-sm-10
+            input#inputLanguage.form-control(type="text",name="movie[language]",value=movie.language)
+
+        .form-group
+          label.col-sm-2.control-label(for="inputPoster") 海报地址
+          .col-sm-10
+            input#inputPoster.form-control(type="text",name="movie[poster]",value=movie.poster)
+            
+        .form-group
+          label.col-sm-2.control-label(for="uploadPoster") 海报上传
+          .col-sm-10
+            input#uploadPoster(type="file",name="uploadPoster")
+
+        .form-group
+          label.col-sm-2.control-label(for="inputFlash") 片源地址
+          .col-sm-10
+            input#inputFlash.form-control(type="text",name="movie[flash]",value=movie.flash)
+
+        .form-group
+          label.col-sm-2.control-label(for="inputYear") 上映年代
+          .col-sm-10
+            input#inputYear.form-control(type="text",name="movie[year]",value=movie.year)
+
+        .form-group
+          label.col-sm-2.control-label(for="inputSummary") 电影简介
+          .col-sm-10
+            input#inputSummary.form-control(type="text",name="movie[summary]",value=movie.summary)
+
+        .form-group
+          .col-sm-offset-2.col-sm-10
+          button.btn.btn-default(type="submit") 录入
+  script(src="/js/admin.js")

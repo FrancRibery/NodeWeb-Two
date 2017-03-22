@@ -1,0 +1,30 @@
+//- 继承自layout布局
+extends ../layout
+
+//- 声明主要的内容
+block content
+  .container
+    .row
+      each cat in categories
+        //- 通过控制器将从数据库中查询到的数据通过render传入这里进行循环方便使用
+        .panel.panel-default
+          .panel-heading
+            //- 将每组电影分类的名称变成一个链接,第一个参数代表每种分类对应的id,第二个参数是页数(假设该分类下电影一共有50页,那么这里p=1就是查看第2页,以此类推)
+            h3 
+              a(href='/results?cat=#{cat._id}&p=0') #{cat.name}
+          .panel-body
+            if cat.movies && cat.movies.length > 0
+              //- 对每个分类下的电影进行遍历输出到页面中
+              each item in cat.movies
+                .col-md-2
+                  .thumbnail
+                    a(href="/movie/#{item._id}")
+                      //- 如果是直接从豆瓣上拉取的图片则直接展现,如果是用户自己上传的则要重新拼接进行展现
+                      if item.poster.indexOf('http') > -1
+                        img(src="#{item.poster}",alt="#{item.title}")
+                      else
+                        img(src="/upload/#{item.poster}",alt="#{item.title}")
+                    .caption
+                      h4 #{item.title}
+                      p: a.btn.btn-primary(href="/movie/#{item._id}",role="button")
+                        观看预告片
